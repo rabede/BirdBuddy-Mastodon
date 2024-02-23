@@ -31,6 +31,8 @@ As Birdini, this script depends on [jhansche's pybirdbuddy](https://github.com/j
 
 6. Install as daemon on your RasperryPi or other    
 
+    use birdbuddy2mastodon.service as a template, replace USER with your preferences and pathes if necessary
+
 # Environment Variables
 
 `BB_NAME`

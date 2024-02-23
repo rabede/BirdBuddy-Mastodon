@@ -1,0 +1,14 @@
+[Unit]
+Description=BirdBuddy2Mastodon
+After=network.target
+
+[Service]
+User=rabe
+Group=rabe
+WorkingDirectory=/home/rabe/BirdBuddy2Mastodon/
+Environment="PATH=/home/rabe/BirdBuddy2Mastodon/.envMasto/bin/"
+ExecStart=/home/rabe/BirdBuddy2Mastodon/.envMasto/bin/python /home/rabe/BirdBuddy2Mastodon/birdbuddy2mastodon.py
+
+[Install]
+WantedBy=multi-user.target
+
