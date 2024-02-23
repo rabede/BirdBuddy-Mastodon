@@ -9,11 +9,11 @@ As Birdini, this script depends on [jhansche's pybirdbuddy](https://github.com/j
 
 1. Clone the repository
 
-    `git clone https://github.com/rabede/BirdBuddyMastodon.git`
+    `git clone https://github.com/rabede/BirdBuddy2Mastodon.git`
 
 2. CD into new directory, create and activate your python environment
 
-    `cd BirdBuddyMastodon`
+    `cd BirdBuddy2Mastodon`
 
     `python -m venv .envMasto`
 
