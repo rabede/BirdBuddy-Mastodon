@@ -5,27 +5,6 @@ This is a simple copy of [DenchyRS's Birdini](https://github.com/DenchyRS/Birdin
 
 As Birdini, this script depends on [jhansche's pybirdbuddy](https://github.com/jhansche/pybirdbuddy)
 
-# Environment Variables
-
-To run this project, you will need to add the following environment variables to your .env file or use the template provided in the Git.
-
-`MASTODON_ACCESS_TOKEN`
-
-Access token for your Mastodon App 
-
-`MASTODON_API_BASE_URL`
-
-URL of your Mastodon Instance e.g. 'https://mastodon.social' 
-
-
-`BB_NAME`
-
-This is the email used to log into your BirdBuddy account. Note that this has to be an email/password login and can not be an integration like login with Google. A good work around for this issue (if your primary account is using such type of login). Is to create a new account using an email and then inviting them to be a guest at your feeder.
-
-`BB_PASS`
-
-This is the password used to log into your BirdBuddy account.
-
 # Setup Guide
 
 1. Clone the repository
@@ -51,3 +30,37 @@ This is the password used to log into your BirdBuddy account.
     `python bot.py`
 
 6. Install as daemon on your RasperryPi or other    
+
+# Environment Variables
+
+`BB_NAME`
+
+This is the email used to log into your BirdBuddy account. Note that this has to be an email/password login and can not be an integration like login with Google. A good work around for this issue (if your primary account is using such type of login). Is to create a new account using an email and then inviting them to be a guest at your feeder.
+
+`BB_PASS`
+
+This is the password used to log into your BirdBuddy account.
+
+`MASTODON_ACCESS_TOKEN`
+
+Access token for your Mastodon App 
+
+`MASTODON_API_BASE_URL`
+
+URL of your Mastodon Instance e.g. 'https://mastodon.social' 
+
+`MASTODON_VISIBILITY`
+
+Set the visibility of your post  ('direct', 'private', 'unlisted', 'public')
+
+`MASTODON_MAX_FILES`
+
+Maximum number of files Mastodon accepts appended to a post (currently 4)
+
+`SECONDS_TO_SLEEP` 
+
+Number of seconds between checks for new postcards
+
+`LOGFILE`
+
+Name of logfile (leave empty for console log)

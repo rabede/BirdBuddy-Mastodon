@@ -1,5 +1,16 @@
 # .env
-MASTODON_ACCESS_TOKEN= 
-MASTODON_API_BASE_URL=
-BB_NAME=
-BB_PASS=
+#BirdBuddy credentials
+BB_NAME =
+BB_PASS =
+
+#Mastodon Credentials
+MASTODON_ACCESS_TOKEN = 
+MASTODON_API_BASE_URL =
+
+#Mastodon settings
+MASTODON_VISIBILITY = 'unlisted'
+MASTODON_MAX_FILES = 4
+
+#Script settings
+SECONDS_TO_SLEEP = 60
+LOGFILE = ''                        #Leave empty for console log
