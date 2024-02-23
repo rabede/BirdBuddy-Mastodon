@@ -13,8 +13,8 @@ multidict==6.0.5
 pybirdbuddy==0.0.17
 python-dateutil==2.8.2
 python-dotenv==1.0.1
-python-graphql-client==0.4.3
-python-magic-bin==0.4.14
+python-graphql-client
+python-magic
 requests==2.31.0
 six==1.16.0
 urllib3==2.2.1

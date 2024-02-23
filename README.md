@@ -27,7 +27,7 @@ As Birdini, this script depends on [jhansche's pybirdbuddy](https://github.com/j
 
 5. Run and test locallally
 
-    `python bot.py`
+    `python birdbuddy2mastodon.py`
 
 6. Install as daemon on your RasperryPi or other    
 
