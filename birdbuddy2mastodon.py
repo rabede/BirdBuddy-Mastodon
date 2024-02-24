@@ -21,6 +21,8 @@ FILENAME = os.getenv('LOGFILE')
 
 logging.basicConfig(level=logging.DEBUG, filename=FILENAME, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
+last_postcard_id = ''
+
 
 # Initialize Mastodon client
 mastodon = Mastodon(
@@ -34,31 +36,35 @@ bb = BirdBuddy(EMAIL, PASS)
 bb.language_code = "de"
 
 # Utility function to upload images to Mastodon and return media IDs
-def upload_images_to_mastodon(image_urls):
+def upload_images_to_mastodon(image_urls, birdName):
+    description = f'{birdnName} im Futteräuschen'
     media_ids = []
     for url in image_urls:
         response = requests.get(url)
-        media = mastodon.media_post(response.content, "image/png")
+        media = mastodon.media_post(response.content, "image/png", description=description)
         media_ids.append(media['id'])
     logging.debug(f'{media_ids} uploaded')    
     return media_ids
 
-def post_status(imageUrls, status_text):
+def post_status(imageUrls, status_text, birdName):
     # Upload images and get their media IDs
-    media_ids = upload_images_to_mastodon(imageUrls)
+    media_ids = upload_images_to_mastodon(imageUrls, birdName)
     # Post status with media on Mastodon
     mastodon.status_post(status_text, media_ids=media_ids,  visibility=VISIBILITY)
 
 
 # check for bird sightings
 async def check_bird_sighting():
+    global last_postcard_id
     logging.info('Checking new sightings')
     postcards = await bb.new_postcards()
     # return if no new postcards are detected
-    if len(postcards) == 0:
+    if len(postcards) == 0 or postcards[0]['id'] == last_postcard_id:
         logging.debug('No new postcards')
         return
 
+    
+    last_postcard_id = postcards[0]['id'] 
     logging.debug(postcards)
 
     # after postcard sighting is confirmed use finishPostcard
@@ -78,8 +84,8 @@ async def check_bird_sighting():
     logging.debug(videoUrls)
     # Determine if there is a video url and select appropriate emoji for embed
     if len(videoUrls) > 0:
-        videoEmoji = 'Yes'
-        hasVideo = True
+        videoEmoji = f'{videoUrls[0]}'
+        hasVideo = True 
     else:
         videoEmoji = 'No'
         hasVideo = False
@@ -100,19 +106,19 @@ async def check_bird_sighting():
         try:
             birdVisitCount = report['sightings'][0]['count']
             descriptionText = f"🐦 Total visits: {str(birdVisitCount)}{description}"
-            embedTitle = f"{birdName} spotted!"
+            embedTitle = f"spotted a {birdName}"
             embedColor = 0x4dff4d
         except:
             birdVisitCount = 1
-            descriptionText = f"This is your first time being visited by a {birdName}!\n\n🐦 Total Visits: 1{description}"
+            descriptionText = f"This is my first time being visited by a {birdName}!\n\n🐦 Total Visits: 1{description}"
             embedTitle = f"{birdName} unlocked!"
             embedColor = 0xf1c232    
 
     # Construct the status text
-    status_text = f"#BirdBuddy reports {embedTitle} on {datetime.datetime.now().strftime('%d.%m.%Y %H:%M')} \ndescritionText"
+    status_text = f"#BirdBuddy {embedTitle} on {datetime.datetime.now().strftime('%d.%m.%Y %H:%M')} \n{descriptionText}"
     logging.info(status_text)
 
-    post_status(imageUrls, status_text)
+    post_status(imageUrls, status_text, birdName)
 
 
 # Async event loop to call check_bird_sighting periodically
