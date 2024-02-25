@@ -10,7 +10,7 @@ idna==3.6
 langcodes==3.3.0
 Mastodon.py==1.8.1
 multidict==6.0.5
-pybirdbuddy==0.0.17
+pybirdbuddy
 python-dateutil==2.8.2
 python-dotenv==1.0.1
 python-graphql-client

@@ -37,7 +37,7 @@ bb.language_code = "de"
 
 # Utility function to upload images to Mastodon and return media IDs
 def upload_images_to_mastodon(image_urls, birdName):
-    description = f'{birdnName} im Futteräuschen'
+    description = f'{birdName} im Futteräuschen'
     media_ids = []
     for url in image_urls:
         response = requests.get(url)
