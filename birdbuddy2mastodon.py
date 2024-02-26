@@ -57,18 +57,26 @@ def post_status(imageUrls, status_text, birdName):
 async def check_bird_sighting():
     global last_postcard_id
     logging.info('Checking new sightings')
-    postcards = await bb.new_postcards()
-    # return if no new postcards are detected
-    if len(postcards) == 0 or postcards[0]['id'] == last_postcard_id:
-        logging.debug('No new postcards')
+    try:
+        postcards = await bb.new_postcards()
+        # return if no new postcards are detected
+        if len(postcards) == 0 or postcards[0]['id'] == last_postcard_id:
+            logging.debug('No new postcards')
+            return
+    except Exception as e:
+        logging.debug(e)
         return
-
     
     last_postcard_id = postcards[0]['id'] 
     logging.debug(postcards)
 
     # after postcard sighting is confirmed use finishPostcard
-    sighting = await bb.sighting_from_postcard(postcards[0])
+    try:
+        sighting = await bb.sighting_from_postcard(postcards[0])
+    except Exception as e:
+        logging.debug(e)
+        return
+    
     report = sighting.report
     logging.debug(sighting)
     logging.debug(report)
