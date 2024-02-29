@@ -21,7 +21,7 @@ FILENAME = os.getenv('LOGFILE')
 
 logging.basicConfig(level=logging.DEBUG, filename=FILENAME, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-last_postcard_id = ''
+last_postcard_id = []
 
 
 # Initialize Mastodon client
@@ -56,77 +56,102 @@ def post_status(imageUrls, status_text, birdName):
 # check for bird sightings
 async def check_bird_sighting():
     global last_postcard_id
-    logging.info('Checking new sightings')
+    imageUrls = []
+    videoUrls = []
+
     try:
         postcards = await bb.new_postcards()
-        # return if no new postcards are detected
-        if len(postcards) == 0 or postcards[0]['id'] == last_postcard_id:
+        if len(postcards) == 0:
             logging.debug('No new postcards')
             return
     except Exception as e:
         logging.debug(e)
         return
     
-    last_postcard_id = postcards[0]['id'] 
-    logging.debug(postcards)
+    for postcard in postcards:
+        id = postcard['id']
+        if id  in last_postcard_id:
+            logging.debug('No new postcards')
+            return
 
-    # after postcard sighting is confirmed use finishPostcard
-    try:
-        sighting = await bb.sighting_from_postcard(postcards[0])
-    except Exception as e:
-        logging.debug(e)
-        return
-    
-    report = sighting.report
-    logging.debug(sighting)
-    logging.debug(report)
-    
-    imageUrls = [item['contentUrl'] for item in sighting.medias]
-    imageCount = len(imageUrls)
-    logging.debug(imageUrls)
-    # Make sure, Mastodons file limit won't be exceeded
-    if imageCount > MAX_FILES:
-        imageUrls = imageUrls[:MAX_FILES]
-
-    videoUrls = [item['contentUrl'] for item in sighting.video_media]
-    logging.debug(videoUrls)
-    # Determine if there is a video url and select appropriate emoji for embed
-    if len(videoUrls) > 0:
-        videoEmoji = f'{videoUrls[0]}'
-        hasVideo = True 
-    else:
-        videoEmoji = 'No'
-        hasVideo = False
-
-    description = f"\n🖼️ Images captured: {imageCount} \n📹 Video captured: {videoEmoji}"
-
-    split_string = str(report).split("'")
-    recognized_phrase = split_string[3]
-    if recognized_phrase == "mystery" or recognized_phrase == "best_guess":
-        birdIcon = ""
-        descriptionText = f"🐦 Total visits: ??{description}"
-        embedTitle = "Unidentifiable bird spotted!"
-        embedColor = 0xb5b5b6
-    else:
+        try:
+            sighting = await bb.sighting_from_postcard(postcard)
+            report = sighting.report
+        except Exception as e:
+            logging.debug(e)
+            return
 
         birdName = report['sightings'][0]['species']['name']
         birdIcon = report['sightings'][0]['species']['iconUrl']
-        try:
-            birdVisitCount = report['sightings'][0]['count']
-            descriptionText = f"🐦 Total visits: {str(birdVisitCount)}{description}"
-            embedTitle = f"spotted a {birdName}"
-            embedColor = 0x4dff4d
-        except:
-            birdVisitCount = 1
-            descriptionText = f"This is my first time being visited by a {birdName}!\n\n🐦 Total Visits: 1{description}"
-            embedTitle = f"{birdName} unlocked!"
-            embedColor = 0xf1c232    
+        
+        for imageCount, image in enumerate(sighting.medias, start=1):
+            createtAt = image.created_at
+            imgName = createtAt.strftime('%Y%m%d_%H%M%S')  + '_'  + birdName  + str(imageCount)
+            imageUrl = image.content_url
+            if imageCount < MAX_FILES:
+                imageUrls.append(imageUrl)          
 
-    # Construct the status text
-    status_text = f"#BirdBuddy {embedTitle} on {datetime.datetime.now().strftime('%d.%m.%Y %H:%M')} \n{descriptionText}"
-    logging.info(status_text)
+            # Send an HTTP GET request to the image URL
+            response = requests.get(imageUrl)
 
-    post_status(imageUrls, status_text, birdName)
+            # Check if the request was successful
+            if response.status_code == 200:
+                with open(f'{imgName}.jpg', 'wb') as file:
+                    # Write the content of the response (the image) to the file
+                    file.write(response.content)
+            else:
+                print(f"Failed to retrieve image. Status code: {response.status_code}")
+            
+        for videoCount, video in enumerate(sighting.video_media, start=1):       
+            createtAt = video.created_at
+            videoName = createtAt.strftime('%Y%m%d_%H%M%S')  + '_'  + birdName  + str(videoCount)
+            videoUrl =  video['contentUrl']
+            videoUrls.append(videoUrl)
+            # Determine if there is a video url and select appropriate emoji for embed
+            if len(videoUrls) > 0:
+                videoEmoji = f'{videoUrls[0]}'
+                hasVideo = True 
+                # imageUrls[0] = videoUrl
+                response = requests.get(videoUrl)
+                if response.status_code == 200:
+                    with open(f'{videoName}.mp4', 'wb') as file:
+                        # Write the content of the response (the image) to the file
+                        file.write(response.content)
+                else:
+                    print(f"Failed to retrieve image. Status code: {response.status_code}")
+            else:
+                videoEmoji = 'No'
+                hasVideo = False
+
+
+
+        description = f"\n🖼️ Images captured: {imageCount} \n📹 Video captured: {videoEmoji}"
+
+        split_string = str(report).split("'")
+        recognized_phrase = split_string[3]
+        if recognized_phrase == "mystery" or recognized_phrase == "best_guess":
+            birdIcon = ""
+            descriptionText = f"🐦 Total visits: ??{description}"
+            embedTitle = "Unidentifiable bird spotted!"
+            embedColor = 0xb5b5b6
+        else:
+
+            try:
+                birdVisitCount = report['sightings'][0]['count']
+                descriptionText = f"🐦 Total visits: {str(birdVisitCount)}{description}"
+                embedTitle = f"spotted a {birdName}"
+                embedColor = 0x4dff4d
+            except:
+                birdVisitCount = 1
+                descriptionText = f"This is my first time being visited by a {birdName}!\n\n🐦 Total Visits: 1{description}"
+                embedTitle = f"{birdName} unlocked!"
+                embedColor = 0xf1c232    
+
+        # Construct the status text
+        status_text = f"#BirdBuddy {embedTitle} {birdIcon} on {datetime.datetime.now().strftime('%d.%m.%Y %H:%M')} \n{descriptionText}"
+        logging.info(status_text)
+
+        post_status(imageUrls, status_text, birdName)
 
 
 # Async event loop to call check_bird_sighting periodically
