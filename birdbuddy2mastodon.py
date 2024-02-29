@@ -56,8 +56,6 @@ def post_status(imageUrls, status_text, birdName):
 # check for bird sightings
 async def check_bird_sighting():
     global last_postcard_id
-    imageUrls = []
-    videoUrls = []
 
     try:
         postcards = await bb.new_postcards()
@@ -69,6 +67,8 @@ async def check_bird_sighting():
         return
     
     for postcard in postcards:
+        imageUrls = []
+        videoUrls = []
         id = postcard['id']
         if id  in last_postcard_id:
             logging.debug('No new postcards')
