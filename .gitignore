@@ -1,4 +1,6 @@
 .env
 .venv/
 .envMasto/
+*.jpg
+*.mp4
 birdbuddy2mastodon.service
