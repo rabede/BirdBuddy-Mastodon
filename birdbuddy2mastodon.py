@@ -154,6 +154,7 @@ async def check_bird_sighting():
 
         # Construct the status text
         status_text = f"#BirdBuddy {embedTitle} on {sightingTime} \n{descriptionText}"
+        status_text = f"#BirdBuddy {embedTitle} on {sightingTime} \n{descriptionText}"
         logging.info(status_text)
 
         post_status(imageUrls, status_text, birdName)
@@ -166,6 +167,7 @@ async def main(interval_seconds):
         logging.debug(f'Wait {interval_seconds} seconds before trying again')
         await asyncio.sleep(interval_seconds) 
 
+logging.debug('Main started')
 logging.debug('Main started')
 # Run the event loop
 asyncio.run(main(SLEEP))  
