@@ -1,3 +1,4 @@
 .env
+.venv/
 .envMasto/
 birdbuddy2mastodon.service

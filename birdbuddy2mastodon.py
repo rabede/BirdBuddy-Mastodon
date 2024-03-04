@@ -23,7 +23,6 @@ logging.basicConfig(level=logging.DEBUG, filename=FILENAME, format='%(asctime)s 
 
 last_postcard_id = []
 
-
 # Initialize Mastodon client
 mastodon = Mastodon(
     access_token=ACCESS_TOKEN,
@@ -56,6 +55,7 @@ def post_status(imageUrls, status_text, birdName):
 # check for bird sightings
 async def check_bird_sighting():
     global last_postcard_id
+    logging.debug(f'Last Postcard ID: {last_postcard_id}')
 
     try:
         postcards = await bb.new_postcards()
@@ -67,12 +67,19 @@ async def check_bird_sighting():
         return
     
     for postcard in postcards:
-        imageUrls = []
-        videoUrls = []
         id = postcard['id']
         if id  in last_postcard_id:
             logging.debug('No new postcards')
             return
+        
+        last_postcard_id.append(id)
+        logging.debug(f'Last Postcard ID: {last_postcard_id}')
+
+        imageUrls = []
+        videoUrls = []
+
+        sightingTimestamp = postcard.created_at
+        sightingTime = sightingTimestamp.strftime('%d.%m.%Y %H:%M')
 
         try:
             sighting = await bb.sighting_from_postcard(postcard)
@@ -83,7 +90,7 @@ async def check_bird_sighting():
 
         birdName = report['sightings'][0]['species']['name']
         birdIcon = report['sightings'][0]['species']['iconUrl']
-        
+                
         for imageCount, image in enumerate(sighting.medias, start=1):
             createtAt = image.created_at
             imgName = createtAt.strftime('%Y%m%d_%H%M%S')  + '_'  + birdName  + str(imageCount)
@@ -123,8 +130,6 @@ async def check_bird_sighting():
                 videoEmoji = 'No'
                 hasVideo = False
 
-
-
         description = f"\n🖼️ Images captured: {imageCount} \n📹 Video captured: {videoEmoji}"
 
         split_string = str(report).split("'")
@@ -148,7 +153,7 @@ async def check_bird_sighting():
                 embedColor = 0xf1c232    
 
         # Construct the status text
-        status_text = f"#BirdBuddy {embedTitle} {birdIcon} on {datetime.datetime.now().strftime('%d.%m.%Y %H:%M')} \n{descriptionText}"
+        status_text = f"#BirdBuddy {embedTitle} on {sightingTime} \n{descriptionText}"
         logging.info(status_text)
 
         post_status(imageUrls, status_text, birdName)
@@ -161,5 +166,6 @@ async def main(interval_seconds):
         logging.debug(f'Wait {interval_seconds} seconds before trying again')
         await asyncio.sleep(interval_seconds) 
 
+logging.debug('Main started')
 # Run the event loop
 asyncio.run(main(SLEEP))  
