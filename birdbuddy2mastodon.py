@@ -56,6 +56,7 @@ def post_status(imageUrls, status_text, birdName):
 # check for bird sightings
 async def check_bird_sighting():
     global last_postcard_id
+    logging.debug(f'Last Postcard ID: {last_postcard_id}')
 
     try:
         postcards = await bb.new_postcards()
@@ -73,6 +74,9 @@ async def check_bird_sighting():
         if id  in last_postcard_id:
             logging.debug('No new postcards')
             return
+        
+        last_postcard_id.append(id)
+        logging.debug(f'Last Postcard ID: {last_postcard_id}')
 
         try:
             sighting = await bb.sighting_from_postcard(postcard)
@@ -83,6 +87,8 @@ async def check_bird_sighting():
 
         birdName = report['sightings'][0]['species']['name']
         birdIcon = report['sightings'][0]['species']['iconUrl']
+        sightingTimestamp = report['sightings'][0]['timestamp']
+        sightingTime = sightingTimestamp.strftime('%d.%m.%Y %H:%M')
         
         for imageCount, image in enumerate(sighting.medias, start=1):
             createtAt = image.created_at
@@ -148,7 +154,7 @@ async def check_bird_sighting():
                 embedColor = 0xf1c232    
 
         # Construct the status text
-        status_text = f"#BirdBuddy {embedTitle} {birdIcon} on {datetime.datetime.now().strftime('%d.%m.%Y %H:%M')} \n{descriptionText}"
+        status_text = f"#BirdBuddy {embedTitle} on {sightingTime} \n{descriptionText}"
         logging.info(status_text)
 
         post_status(imageUrls, status_text, birdName)
@@ -161,5 +167,6 @@ async def main(interval_seconds):
         logging.debug(f'Wait {interval_seconds} seconds before trying again')
         await asyncio.sleep(interval_seconds) 
 
+logging.debug('Main started')
 # Run the event loop
 asyncio.run(main(SLEEP))  
