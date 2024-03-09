@@ -130,31 +130,31 @@ async def check_bird_sighting():
                 videoEmoji = 'No'
                 hasVideo = False
 
-        description = f"\n🖼️ Images captured: {imageCount} \n📹 Video captured: {videoEmoji}"
+        description = f"\n🖼️Bilder: {imageCount} \n📹 Video: {videoEmoji}"
 
         split_string = str(report).split("'")
         recognized_phrase = split_string[3]
         if recognized_phrase == "mystery" or recognized_phrase == "best_guess":
             birdIcon = ""
-            descriptionText = f"🐦 Total visits: ??{description}"
-            embedTitle = "Unidentifiable bird spotted!"
+
+            descriptionText = f"🐦 Besuche bisher: ??{description}"
+            embedTitle = "Art nicht erkannt!"
             embedColor = 0xb5b5b6
         else:
 
             try:
                 birdVisitCount = report['sightings'][0]['count']
-                descriptionText = f"🐦 Total visits: {str(birdVisitCount)}{description}"
-                embedTitle = f"spotted a {birdName}"
+                descriptionText = f"🐦 Besuche bisher: {str(birdVisitCount)}{description}"
+                embedTitle = f"hatte Besuch von {birdName}"
                 embedColor = 0x4dff4d
             except:
                 birdVisitCount = 1
-                descriptionText = f"This is my first time being visited by a {birdName}!\n\n🐦 Total Visits: 1{description}"
-                embedTitle = f"{birdName} unlocked!"
+                descriptionText = f"Erster Besuch von  {birdName}!\n\n🐦  1{description}"
+                embedTitle = f"{birdName} erstmals gesichtet!"
                 embedColor = 0xf1c232    
 
         # Construct the status text
-        status_text = f"#BirdBuddy {embedTitle} on {sightingTime} \n{descriptionText}"
-        status_text = f"#BirdBuddy {embedTitle} on {sightingTime} \n{descriptionText}"
+        status_text = f"#BirdBuddy {embedTitle} n {sightingTime} \n{descriptionText}"
         logging.info(status_text)
 
         post_status(imageUrls, status_text, birdName)
