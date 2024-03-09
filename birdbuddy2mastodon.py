@@ -88,9 +88,12 @@ async def check_bird_sighting():
             logging.debug(e)
             return
 
-        birdName = report['sightings'][0]['species']['name']
-        birdIcon = report['sightings'][0]['species']['iconUrl']
-                
+        try: 
+            birdName = report['sightings'][0]['species']['name']
+            birdIcon = report['sightings'][0]['species']['iconUrl']
+        except KeyError as e:
+            birdName = 'unbekannt'# report['sightings'][0]['_typename']
+
         for imageCount, image in enumerate(sighting.medias, start=1):
             createtAt = image.created_at
             imgName = createtAt.strftime('%Y%m%d_%H%M%S')  + '_'  + birdName  + str(imageCount)
@@ -154,7 +157,7 @@ async def check_bird_sighting():
                 embedColor = 0xf1c232    
 
         # Construct the status text
-        status_text = f"#BirdBuddy {embedTitle} n {sightingTime} \n{descriptionText}"
+        status_text = f"#BirdBuddy {embedTitle}  {sightingTime} \n{descriptionText}\n#BirdsOfMastodon #Leverkusen"
         logging.info(status_text)
 
         post_status(imageUrls, status_text, birdName)
