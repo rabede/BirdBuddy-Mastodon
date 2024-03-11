@@ -157,7 +157,7 @@ async def check_bird_sighting():
                 embedColor = 0xf1c232    
 
         # Construct the status text
-        status_text = f"#BirdBuddy {embedTitle}  {sightingTime} \n{descriptionText}\n#BirdsOfMastodon #Leverkusen"
+        status_text = f"#BirdBuddy {embedTitle}  {sightingTime} \n{descriptionText}\n#BirdsOfMastodon #Leverkusen #{birdName}"
         logging.info(status_text)
 
         post_status(imageUrls, status_text, birdName)
