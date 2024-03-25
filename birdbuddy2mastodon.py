@@ -98,7 +98,7 @@ async def check_bird_sighting():
             createtAt = image.created_at
             imgName = createtAt.strftime('%Y%m%d_%H%M%S')  + '_'  + birdName  + str(imageCount)
             imageUrl = image.content_url
-            if imageCount < MAX_FILES:
+            if imageCount <= MAX_FILES:
                 imageUrls.append(imageUrl)          
 
             # Send an HTTP GET request to the image URL
