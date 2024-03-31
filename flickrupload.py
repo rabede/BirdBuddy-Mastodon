@@ -3,6 +3,7 @@ import re
 import flickrapi
 import webbrowser
 import shutil
+import dotenv
 
 load_dotenv()
 KEY = os.getenv('FLICKR_KEY')
