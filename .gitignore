@@ -1,6 +1,8 @@
 .env
 .venv/
 .envMasto/
+.wenv/
 *.jpg
 *.mp4
 birdbuddy2mastodon.service
+__pycache__/

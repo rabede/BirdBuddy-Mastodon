@@ -15,9 +15,9 @@ As Birdini, this script depends on [jhansche's pybirdbuddy](https://github.com/j
 
     `cd BirdBuddy2Mastodon`
 
-    `python -m venv .envMasto`
+    `python -m venv .venv`
 
-    `source .envMasto/bin/activate`
+    `source .venv/bin/activate`
 
 3. Install dependencies
 
@@ -66,3 +66,27 @@ Number of seconds between checks for new postcards
 `LOGFILE`
 
 Name of logfile (leave empty for console log)
+
+`FLICKR_KEY`
+
+Flickr-Api-Key (remove entry if you don't want flicker upload )
+
+`FLICKR_SECRET`
+
+Flickr-Api-Secret
+
+`LOCAL_DEST`
+
+local folder to move media with exif-data
+
+`LOCAL_LAT`
+
+Latitude for exif-data
+
+`LOCAL_LON`
+
+Longitute for exif-data
+
+`LOCAL_TAG`
+
+String for user comment in exif-data, Common name is added in program, first eight characters are cut! 

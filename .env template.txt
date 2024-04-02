@@ -14,3 +14,11 @@ MASTODON_MAX_FILES = 4
 #Script settings
 SECONDS_TO_SLEEP = 60
 LOGFILE = ''                        #Leave empty for console log
+
+FLICKR_KEY=
+FLICKR_SECRET=
+
+LOCAL_DEST='./media'
+LOCAL_LAT=51.999
+LOCAL_LON=7.0000
+LOCAL_TAG='        bird, BirdBuddy'
