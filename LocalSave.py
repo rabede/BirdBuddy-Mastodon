@@ -28,7 +28,7 @@ class LocalSave:
         files = [file for file in os.listdir(self.source) if file.endswith('.jpg') or file.endswith('.mp4')]
         for file in files:
             title = re.search(r'^\d{8}_\d{6}_(.*?)\d*\.(jpg|mp4)$', file).group(1)
-            datetime = re.search(r'(^\d{8}_\d{6})_(.*?)\d*\.(jpg|mp4)$', file).group(1)
+            datetime = self._convert_datetime(re.search(r'(^\d{8}_\d{6})_(.*?)\d*\.(jpg|mp4)$', file).group(1))
             destfile = os.path.join(self.dest, file)
             tags = f'{self.tag}, {title}'
             
@@ -73,6 +73,20 @@ class LocalSave:
 
         # Return a tuple of tuples (degrees, minutes, seconds), each represented as a fraction
         return [(d, 1), (m, 1), (s, 100)]
+    
+    def _convert_datetime(self, datetime):
+        # Split the string into date and time parts
+        date_part, time_part = datetime.split("_")
+        
+        # Insert colons into the time part
+        time_formatted = ":".join([time_part[i:i+2] for i in range(0, len(time_part), 2)])
+        
+        # Format the date part
+        date_formatted = date_part[:4] + ":" + date_part[4:6] + ":" + date_part[6:]
+        
+        # Combine the formatted date and time with a space separator
+        result = date_formatted + " " + time_formatted
+        return result
 
 
 
