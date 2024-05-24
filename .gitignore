@@ -6,3 +6,5 @@
 *.mp4
 birdbuddy2mastodon.service
 __pycache__/
+qraphql.ipynb
+graphql.py

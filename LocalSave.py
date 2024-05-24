@@ -50,7 +50,7 @@ class LocalSave:
                 video['\xa9ART'] = title
                 video['\xa9alb'] = 'BirdBuddy'
                 video['\xa9day'] = datetime[:4]
-                video['desc'] = tags
+                video['desc'] = tags.lstrip()
                 video['\xa9gen'] = 'Vogel'
                 video.save()
 

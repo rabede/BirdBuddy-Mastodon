@@ -8,6 +8,8 @@ from birdbuddy.client import BirdBuddy
 from dotenv import load_dotenv
 from FlickrUpload import FlickrUpload
 from LocalSave import LocalSave
+import pytz
+from datetime import datetime
 
 # Load environment variables or replace these with your actual credentials
 load_dotenv()
@@ -62,6 +64,19 @@ def post_status(imageUrls, status_text, birdName):
     # Post status with media on Mastodon
     mastodon.status_post(status_text, media_ids=media_ids,  visibility=VISIBILITY)
 
+def recalc_time(timestamp):
+    # Zeitzonen definieren
+    utc = pytz.utc
+    cet = pytz.timezone('Europe/Berlin')  # MEZ / MEZS
+
+    # UTC Zeit auf MEZ/MEZS umrechnen
+    sightingTimestamp = utc.localize(timestamp)
+    sightingTime = sightingTimestamp.astimezone(cet)
+
+    # Formatierte Ausgabe
+    formatted_time = sightingTime.strftime('%d.%m.%Y %H:%M')
+
+    return formatted_time
 
 # check for bird sightings
 async def check_bird_sighting():
@@ -88,9 +103,7 @@ async def check_bird_sighting():
 
         imageUrls = []
         videoUrls = []
-
-        sightingTimestamp = postcard.created_at
-        sightingTime = sightingTimestamp.strftime('%d.%m.%Y %H:%M')
+        sightingTime = recalc_time(postcard.created_at)
 
         try:
             sighting = await bb.sighting_from_postcard(postcard)
@@ -101,13 +114,11 @@ async def check_bird_sighting():
 
         try: 
             birdName = report['sightings'][0]['species']['name']
-            birdIcon = report['sightings'][0]['species']['iconUrl']
         except KeyError as e:
             birdName = 'unbekannt'# report['sightings'][0]['_typename']
 
         for imageCount, image in enumerate(sighting.medias, start=1):
-            createtAt = image.created_at
-            imgName = createtAt.strftime('%Y%m%d_%H%M%S')  + '_'  + birdName  + str(imageCount)
+            imgName = recalc_time(image.created_at)  + '_'  + birdName  + str(imageCount)
             imageUrl = image.content_url
             if imageCount <= MAX_FILES:
                 imageUrls.append(imageUrl)          
@@ -124,8 +135,7 @@ async def check_bird_sighting():
                 print(f"Failed to retrieve image. Status code: {response.status_code}")
             
         for videoCount, video in enumerate(sighting.video_media, start=1):       
-            createtAt = video.created_at
-            videoName = createtAt.strftime('%Y%m%d_%H%M%S')  + '_'  + birdName  + str(videoCount)
+            videoName = recalc_time(video.created_at)  + '_'  + birdName  + str(videoCount)
             videoUrl =  video['contentUrl']
             videoUrls.append(videoUrl)
             # Determine if there is a video url and select appropriate emoji for embed
