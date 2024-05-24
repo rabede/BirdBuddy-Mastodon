@@ -8,6 +8,8 @@ Group=USER
 WorkingDirectory=/home/USER/BirdBuddy2Mastodon/
 Environment="PATH=/home/USER/BirdBuddy2Mastodon/.envMasto/bin/"
 ExecStart=/home/USER/BirdBuddy2Mastodon/.envMasto/bin/python /home/USER/BirdBuddy2Mastodon/birdbuddy2mastodon.py
+Restart=always                                                                                                                                                                            
+RestartSec=5  
 
 [Install]
 WantedBy=multi-user.target
